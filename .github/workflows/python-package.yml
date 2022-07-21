@@ -29,7 +29,5 @@ jobs:
       uses: Gr1N/setup-poetry@v7
     - name: Install depencencies
       run: poetry install
-    - name: Run tox
-      run: poetry run tox
-    - name: Test with pytest
-      run: poetry run pytest
+    - name: Run tox-gh-actions
+      uses: ymyzk/run-tox-gh-actions@v0.1
