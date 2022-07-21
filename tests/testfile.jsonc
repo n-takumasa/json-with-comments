@@ -1,0 +1,15 @@
+// comment
+{ // comment
+    "a": "spam", // comment
+    "b": "ham",
+    "c": "egg",
+    "item": {
+        /* comment // comment */
+        "foo": 1/* comment */, // comment
+        "bar": [1, 2, /* comment */ 3,],
+        "baz": {/* comment */},
+    }, // comment
+} // comment
+//*// comment*/
+/* // comment */
+// comment

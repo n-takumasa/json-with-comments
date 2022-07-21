@@ -1,0 +1,3 @@
+exclude .gitignore
+include README.md
+include LICENSE

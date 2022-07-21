@@ -1,0 +1,36 @@
+[tool.poetry]
+name = "json-with-comments"
+version = "1.0.0"
+description = "JSON with Comments for Python"
+license = "MIT"
+authors = ["Takumasa Nakamura <n.takumasa@gmail.com>"]
+readme = "README.md"
+repository = "https://github.com/n-takumasa/json-with-comments"
+classifiers = [
+    "Topic :: Software Development :: Libraries :: Python Modules"
+]
+packages = [
+    { include = "jsonc" },
+]
+
+[tool.poetry.dependencies]
+python = "^3.7"
+
+[tool.poetry.dev-dependencies]
+pytest = "^7.1.2"
+tox = "^3.25.1"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.tox]
+legacy_tox_ini = """
+[tox]
+envlist = py{37, 38, 39, 310}
+isolated_build = True
+
+[testenv]
+deps = pytest >= 7.1.2
+commands = pytest
+"""
