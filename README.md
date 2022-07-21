@@ -6,6 +6,10 @@
 
 ## Usage
 
+```sh
+pip install json-with-comments
+```
+
 ```py
 import jsonc
 ```
