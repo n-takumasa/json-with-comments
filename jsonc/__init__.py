@@ -16,7 +16,7 @@ from __future__ import annotations
 from collections.abc import Callable
 from typing import Any, TextIO
 
-__version__ = "1.0.0"
+__version__ = "1.0.1"
 import json
 import re
 from json import JSONDecoder, dump, dumps  # for compatibility
