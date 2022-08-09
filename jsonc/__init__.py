@@ -23,8 +23,6 @@ from json import dump, dumps  # for compatibility
 _REMOVE_C_COMMENT = r"""
     ( # String Literal
         \"(?:[^\\\"]|\\\"|\\\\|\\)*?\"
-        |
-        \'(?:[^\\\"]|\\\"|\\\\|\\)*?\'
     )
     |
     ( # Comment
@@ -38,8 +36,6 @@ _REMOVE_C_COMMENT = r"""
 _REMOVE_TRAILING_COMMA = r"""
     ( # String Literal
         \"(?:[^\\\"]|\\\"|\\\\|\\)*?\"
-        |
-        \'(?:[^\\\"]|\\\"|\\\\|\\)*?\'
     )
     | # Right Brace without Trailing Comma & Spaces
     ,\s*([\]}])
