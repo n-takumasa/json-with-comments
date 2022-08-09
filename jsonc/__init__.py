@@ -13,12 +13,13 @@ r"""JSON with Comments for Python
 
 from __future__ import annotations
 
-from typing import TextIO
+from collections.abc import Callable
+from typing import Any, TextIO
 
 __version__ = "1.0.0"
 import json
 import re
-from json import dump, dumps  # for compatibility
+from json import JSONDecoder, dump, dumps  # for compatibility
 
 _REMOVE_C_COMMENT = r"""
     ( # String Literal
@@ -53,14 +54,14 @@ def _remove_trailing_comma(text: str) -> str:
 def load(
     fp: TextIO,
     *,
-    cls=None,
-    object_hook=None,
-    parse_float=None,
-    parse_int=None,
-    parse_constant=None,
-    object_pairs_hook=None,
-    **kw,
-):
+    cls: type[json.JSONDecoder] | None = None,
+    object_hook: Callable[[dict[Any, Any]], Any] | None = None,
+    parse_float: Callable[[str], Any] | None = None,
+    parse_int: Callable[[str], Any] | None = None,
+    parse_constant: Callable[[str], Any] | None = None,
+    object_pairs_hook: Callable[[list[tuple[Any, Any]]], Any] | None = None,
+    **kw: dict[str, Any],
+) -> Any:
     """Deserialize ``fp`` (a ``.read()``-supporting file-like object containing
     a JSON document) to a Python object.
 
@@ -81,14 +82,14 @@ def load(
 def loads(
     s: str,
     *,
-    cls=None,
-    object_hook=None,
-    parse_float=None,
-    parse_int=None,
-    parse_constant=None,
-    object_pairs_hook=None,
-    **kw,
-):
+    cls: type[json.JSONDecoder] | None = None,
+    object_hook: Callable[[dict[Any, Any]], Any] | None = None,
+    parse_float: Callable[[str], Any] | None = None,
+    parse_int: Callable[[str], Any] | None = None,
+    parse_constant: Callable[[str], Any] | None = None,
+    object_pairs_hook: Callable[[list[tuple[Any, Any]]], Any] | None = None,
+    **kw: dict[str, Any],
+) -> Any:
     """Deserialize ``s`` (a ``str``, ``bytes`` or ``bytearray`` instance
     containing a JSON document) to a Python object.
 
