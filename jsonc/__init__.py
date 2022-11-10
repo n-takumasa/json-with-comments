@@ -23,20 +23,20 @@ from json import JSONDecoder, dump, dumps  # for compatibility
 
 _REMOVE_C_COMMENT = r"""
     ( # String Literal
-        \"(?:[^\\\"]|\\\"|\\\\|\\)*?\"
+        \"(?:\\.|[^\\\"])*?\"
     )
     |
     ( # Comment
         \/\*.*?\*\/
         |
-        \/\/[^\r\n]*?(?:[\r\n]|\Z)
+        \/\/[^\r\n]*?(?:[\r\n])
     )
     """
 
 
 _REMOVE_TRAILING_COMMA = r"""
     ( # String Literal
-        \"(?:[^\\\"]|\\\"|\\\\|\\)*?\"
+        \"(?:\\.|[^\\\"])*?\"
     )
     | # Right Brace without Trailing Comma & Spaces
     ,\s*([\]}])
@@ -44,11 +44,20 @@ _REMOVE_TRAILING_COMMA = r"""
 
 
 def _remove_c_comment(text: str) -> str:
-    return re.sub(_REMOVE_C_COMMENT, lambda x: x.group(1), text, flags=re.DOTALL | re.VERBOSE)
+    if text[-1] != "\n":
+        text = text + "\n"
+    return re.sub(
+        _REMOVE_C_COMMENT, lambda x: x.group(1), text, flags=re.DOTALL | re.VERBOSE
+    )
 
 
 def _remove_trailing_comma(text: str) -> str:
-    return re.sub(_REMOVE_TRAILING_COMMA, lambda x: x.group(1) or x.group(2), text, flags=re.DOTALL | re.VERBOSE)
+    return re.sub(
+        _REMOVE_TRAILING_COMMA,
+        lambda x: x.group(1) or x.group(2),
+        text,
+        flags=re.DOTALL | re.VERBOSE,
+    )
 
 
 def load(
