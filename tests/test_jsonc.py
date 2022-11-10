@@ -1,10 +1,14 @@
-import tomli
 from jsonc import __version__, load, loads
+
+try:
+    import tomllib  # type: ignore
+except ImportError:
+    import tomli as tomllib  # type: ignore
 
 
 def test_version():
     with open("pyproject.toml", "rb") as f:
-        version = tomli.load(f)["tool"]["poetry"]["version"]
+        version = tomllib.load(f)["tool"]["poetry"]["version"]
         assert __version__ == version
 
 
