@@ -55,9 +55,12 @@ _REMOVE_TRAILING_COMMA = r"""
 
 
 _ADD_TRAILING_COMMA = r"""
-   # Don't match opening braces to avoid {,}
-   ([^,\[{\s])
-   (?=\s*([\]}]))
+    ( # String Literal
+        \"(?:\\.|[^\\\"])*?\"
+    )
+    | # Don't match opening braces to avoid {,}
+    ((?<=\")|[^,\[{\s])
+    (?=\s*([\]}]))
 """
 
 
@@ -81,7 +84,7 @@ def _remove_trailing_comma(text: str) -> str:
 def _add_trailing_comma(text: str) -> str:
     return re.sub(
         _ADD_TRAILING_COMMA,
-        lambda x: x.group(1) + ",",
+        lambda x: x.group(1) or x.group(2) + ",",
         text,
         flags=re.DOTALL | re.VERBOSE,
     )

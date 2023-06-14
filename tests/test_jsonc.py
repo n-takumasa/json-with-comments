@@ -36,6 +36,7 @@ def test_dumps():
         dumps({"a": "b", "c": {}}, trailing_comma=True, comments="test")
         == '{"a": "b", "c": {},}'
     )
+    assert dumps("{hello}", trailing_comma=True) == '"{hello}"'
     assert dumps({}, indent=2, comments="test") == "// test\n{}"
     obj = {"a": {"b": "c"}, "d": [1, [2, 3], {"x": [6.7, [{}]]}]}
     comments = (
