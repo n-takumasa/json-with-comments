@@ -112,7 +112,7 @@ def _get_comments(
 
 def _warn_unused(
     comments: CommentsDict | None,
-    stack: tuple[CommentsDict | None, int | None, str | int],
+    stack: list[tuple[CommentsDict | None, int | None, str | int]],
 ):
     if not comments:
         return
