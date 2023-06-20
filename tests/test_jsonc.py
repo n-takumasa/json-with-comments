@@ -1,5 +1,6 @@
 from jsonc import __version__, load, loads, dump, dumps
 from io import StringIO
+from copy import deepcopy
 
 try:
     import tomllib  # type: ignore
@@ -58,6 +59,7 @@ def test_dumps():
             },
         },
     )
+    orig_comments = deepcopy(comments)
 
     expected = """
 // test2
@@ -91,6 +93,7 @@ def test_dumps():
 }
     """.strip()
     assert dumps(obj, indent=2, comments=comments) == expected
+    assert comments == orig_comments
     assert (
         dumps(obj, indent=2, trailing_comma=True, comments=comments).count(",")
         - expected.count(",")

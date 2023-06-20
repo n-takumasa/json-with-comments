@@ -14,6 +14,7 @@ r"""JSON with Comments for Python
 from __future__ import annotations
 
 from io import StringIO
+from copy import deepcopy
 from warnings import warn
 from tokenize import NL, STRING, COMMENT, TokenInfo, generate_tokens, untokenize
 from collections.abc import Callable
@@ -179,7 +180,7 @@ def loads(
 
 
 def add_comments(data: str, comments: Comments) -> str:
-    header, comments = _get_comments({0: comments}, 0)
+    header, comments = _get_comments({0: deepcopy(comments)}, 0)
     if header:
         header = _make_comment(header) + "\n"
     else:
