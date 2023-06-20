@@ -13,14 +13,14 @@ r"""JSON with Comments for Python
 
 from __future__ import annotations
 
-from io import StringIO
-from copy import deepcopy
-from warnings import warn
-from tokenize import NL, STRING, COMMENT, TokenInfo, generate_tokens, untokenize
 from collections.abc import Callable
+from copy import deepcopy
+from io import StringIO
+from tokenize import COMMENT, NL, STRING, TokenInfo, generate_tokens, untokenize
 from typing import TYPE_CHECKING, Any, TextIO
+from warnings import warn
 
-__version__ = "1.1.1"
+__version__ = "1.2.0"
 import json
 import re
 from json import JSONDecoder, JSONEncoder  # for compatibility

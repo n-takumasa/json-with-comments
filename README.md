@@ -4,8 +4,12 @@
 [![Python Versions](https://img.shields.io/pypi/pyversions/json-with-comments.svg)](https://pypi.org/project/json-with-comments/)
 
 ## Features
-* Remove single line (`//`) and block comments (`/* */`)
-* Remove trailing commas from arrays and objects
+* `load()`, `loads()`
+  * Remove single line (`//`) and block comments (`/* */`)
+  * Remove trailing commas from arrays and objects
+* `dump()`, `dumps()`
+  * Add comments
+  * Add trailing commas
 
 ## Usage
 
