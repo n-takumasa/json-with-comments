@@ -14,6 +14,7 @@ r"""JSON with Comments for Python
 from __future__ import annotations
 
 from io import StringIO
+from warnings import warn
 from tokenize import NL, STRING, COMMENT, TokenInfo, generate_tokens, untokenize
 from collections.abc import Callable
 from typing import TYPE_CHECKING, Any, TextIO
@@ -24,12 +25,8 @@ import re
 from json import JSONDecoder, JSONEncoder  # for compatibility
 
 if TYPE_CHECKING:
-    Comments = (
-        str
-        | dict[str, "Comments"]
-        | dict[int, "Comments"]
-        | tuple[str, dict[str, "Comments"] | dict[int, "Comments"]]
-    )
+    CommentsDict = dict[str, "Comments"] | dict[int, "Comments"]
+    Comments = str | CommentsDict | tuple[str, CommentsDict]
 
 
 _REMOVE_C_COMMENT = r"""
@@ -97,22 +94,32 @@ def _make_comment(text: str, indent=0) -> str:
 
 
 def _get_comments(
-    comments: Comments | None, key: str | int
-) -> tuple[str | None, Comments | None]:
-    if isinstance(comments, dict):
-        if isinstance(key, str):
-            key = json.loads(key)
-        comments = comments.get(key)
-    else:
-        comments = None
+    comments: CommentsDict | None, key: str | int
+) -> tuple[str | None, CommentsDict | None]:
+    if comments is not None:
+        comments = comments.pop(key, None)
+        if isinstance(comments, tuple):
+            comm, comments = comments
+        elif isinstance(comments, str):
+            comm = comments
+            comments = None
+        else:
+            comm = None
+        return comm, comments
+    return None, None
 
-    if isinstance(comments, tuple):
-        comm, comments = comments
-    elif isinstance(comments, str):
-        comm = comments
-    else:
-        comm = None
-    return comm, comments
+
+def _warn_unused(
+    comments: CommentsDict | None,
+    stack: tuple[CommentsDict | None, int | None, str | int],
+):
+    if not comments:
+        return
+    full_key = ".".join(str(key) for _, _, key in stack[1:])
+    if full_key:
+        full_key += "."
+    for k in comments:
+        warn("Unused comment with key: " + full_key + str(k))
 
 
 def load(
@@ -181,14 +188,14 @@ def add_comments(data: str, comments: Comments) -> str:
     stack = []
     line_shift = 0
     array_index: int | None = None
+    key: str | int | None = None
     for token in generate_tokens(StringIO(data).readline):
         if (
             token.type == STRING or (array_index is not None and token.string != "]")
         ) and result[-1].type == NL:
-            stack.append((comments, array_index))
-            comm, comments = _get_comments(
-                comments, array_index if array_index is not None else token.string
-            )
+            key = array_index if array_index is not None else json.loads(token.string)
+            stack.append((comments, array_index, key))
+            comm, comments = _get_comments(comments, key)
             if comm:
                 comm = _make_comment(comm, token.start[1])
                 comm_coord = (token.start[0] + line_shift, 0)
@@ -213,19 +220,22 @@ def add_comments(data: str, comments: Comments) -> str:
                 line_shift += 1
 
         if token.string == ",":
-            comments, array_index = stack.pop()
+            _warn_unused(comments, stack)
+            comments, array_index, key = stack.pop()
             if array_index is not None:
                 array_index += 1
         elif token.string == "[":
-            stack.append((comments, array_index))
+            stack.append((comments, array_index, key))
             array_index = 0
         elif token.string == "{":
-            stack.append((comments, array_index))
+            stack.append((comments, array_index, key))
             array_index = None
         elif token.string in {"]", "}"}:
-            comments, array_index = stack.pop()
+            _warn_unused(comments, stack)
+            comments, array_index, key = stack.pop()
             if result[-1].type == NL and result[-2].string != ",":
-                comments, array_index = stack.pop()
+                _warn_unused(comments, stack)
+                comments, array_index, key = stack.pop()
 
         token = TokenInfo(
             token.type,
@@ -278,7 +288,10 @@ def dumps(
     if trailing_comma:
         data = _add_trailing_comma(data)
 
-    if comments is None or indent is None:
+    if comments is None:
+        return data
+    if indent is None:
+        warn("Can't add comments to non-indented JSON")
         return data
 
     return add_comments(data, comments)

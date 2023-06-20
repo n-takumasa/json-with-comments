@@ -6,6 +6,8 @@ try:
 except ImportError:
     import tomli as tomllib  # type: ignore
 
+import pytest
+
 
 def test_version():
     with open("pyproject.toml", "rb") as f:
@@ -32,12 +34,15 @@ def test_load():
 
 def test_dumps():
     assert dumps({}) == "{}"
-    assert (
-        dumps({"a": "b", "c": {}}, trailing_comma=True, comments="test")
-        == '{"a": "b", "c": {},}'
-    )
+    with pytest.warns(UserWarning):
+        assert (
+            dumps({"a": "b", "c": {}}, trailing_comma=True, comments="test")
+            == '{"a": "b", "c": {},}'
+        )
     assert dumps("{hello}", trailing_comma=True) == '"{hello}"'
     assert dumps({}, indent=2, comments="test") == "// test\n{}"
+    with pytest.warns(UserWarning):
+        assert dumps({}, indent=2, comments={"a": "b"}) == "{}"
     obj = {"a": {"b": "c"}, "d": [1, [2, 3], {"x": [6.7, [{}]]}]}
     comments = (
         "test2",
