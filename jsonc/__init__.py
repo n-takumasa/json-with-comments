@@ -96,7 +96,9 @@ def _make_comment(text: str, indent=0) -> str:
     )
 
 
-def _get_comments(comments, key):
+def _get_comments(
+    comments: Comments | None, key: str | int
+) -> tuple[str | None, Comments | None]:
     if isinstance(comments, dict):
         if isinstance(key, str):
             key = json.loads(key)
