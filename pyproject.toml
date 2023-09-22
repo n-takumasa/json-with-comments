@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "json-with-comments"
-version = "1.2.1"
+version = "1.2.2"
 description = "JSON with Comments for Python"
 license = "MIT"
 authors = ["Takumasa Nakamura <n.takumasa@gmail.com>"]

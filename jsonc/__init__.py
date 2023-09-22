@@ -20,7 +20,7 @@ from tokenize import COMMENT, NL, STRING, TokenInfo, generate_tokens, untokenize
 from typing import TYPE_CHECKING, Any, TextIO
 from warnings import warn
 
-__version__ = "1.2.1"
+__version__ = "1.2.2"
 import json
 import re
 from json import JSONDecoder, JSONEncoder  # for compatibility
