@@ -1,6 +1,13 @@
+[build-system]
+requires = ["poetry-core>=1.0.0", "poetry-dynamic-versioning>=1.0.0,<2.0.0"]
+build-backend = "poetry_dynamic_versioning.backend"
+
+[tool.poetry-dynamic-versioning]
+enable = true
+
 [tool.poetry]
 name = "json-with-comments"
-version = "1.2.2"
+version = "0.0.0"
 description = "JSON with Comments for Python"
 license = "MIT"
 authors = ["Takumasa Nakamura <n.takumasa@gmail.com>"]
@@ -20,7 +27,3 @@ python = ">=3.7, <3.13"
 pytest = "*"
 tox = ">=3.27,<5.0"
 tomli = { version = "^2.0.1", python = "<3.11" }
-
-[build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
