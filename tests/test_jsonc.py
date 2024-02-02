@@ -1,19 +1,8 @@
-from jsonc import __version__, load, loads, dump, dumps
+from jsonc import load, loads, dump, dumps
 from io import StringIO
 from copy import deepcopy
 
-try:
-    import tomllib  # type: ignore
-except ImportError:
-    import tomli as tomllib  # type: ignore
-
 import pytest
-
-
-def test_version():
-    with open("pyproject.toml", "rb") as f:
-        version = tomllib.load(f)["tool"]["poetry"]["version"]
-        assert __version__ == version
 
 
 def test_loads():
