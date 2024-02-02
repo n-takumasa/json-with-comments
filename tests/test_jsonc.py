@@ -1,8 +1,9 @@
-from jsonc import load, loads, dump, dumps
-from io import StringIO
 from copy import deepcopy
+from io import StringIO
 
 import pytest
+
+from jsonc import dump, dumps, load, loads
 
 
 def test_loads():
@@ -18,7 +19,7 @@ def test_loads():
 
 
 def test_load():
-    with open("tests/testfile.jsonc", "r", encoding="utf-8") as f:
+    with open("tests/testfile.jsonc", encoding="utf-8") as f:
         load(f)
 
 

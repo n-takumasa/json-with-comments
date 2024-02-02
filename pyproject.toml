@@ -26,3 +26,25 @@ python = ">=3.7, <3.13"
 [tool.poetry.group.dev.dependencies]
 pytest = "*"
 tox = ">=3.27,<5.0"
+ruff = "^0.2.0"
+
+[tool.ruff]
+target-version = "py38"
+select = ["ALL"]
+ignore = [
+  "ANN",     # flake8-annotations
+  "D",       # pydocstyle
+  "FIX",     # flake8-fixme
+  "TD",      # flake8-todos
+  "PTH123",  # flake8-use-pathlib: builtin-open
+  "PLR0913", # too-many-arguments
+]
+
+[tool.ruff.per-file-ignores]
+"__init__.py" = [
+  "F401", # Pyflakes: unused-import
+]
+"**/tests/**/*.py" = [
+  "S101",    # flake8-bandit: assert
+  "PLR2004", # magic-value-comparison
+]

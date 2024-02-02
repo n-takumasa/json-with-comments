@@ -13,7 +13,6 @@ r"""JSON with Comments for Python
 
 from __future__ import annotations
 
-from collections.abc import Callable
 from copy import deepcopy
 from io import StringIO
 from tokenize import COMMENT, NL, STRING, TokenInfo, generate_tokens, untokenize
@@ -26,6 +25,8 @@ import re
 from json import JSONDecoder, JSONEncoder  # for compatibility
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
+
     CommentsDict = dict[str, "Comments"] | dict[int, "Comments"]
     Comments = str | CommentsDict | tuple[str, CommentsDict]
 
@@ -66,7 +67,10 @@ def _remove_c_comment(text: str) -> str:
     if text[-1] != "\n":
         text = text + "\n"
     return re.sub(
-        _REMOVE_C_COMMENT, lambda x: x.group(1), text, flags=re.DOTALL | re.VERBOSE
+        _REMOVE_C_COMMENT,
+        lambda x: x.group(1),
+        text,
+        flags=re.DOTALL | re.VERBOSE,
     )
 
 
@@ -95,7 +99,8 @@ def _make_comment(text: str, indent=0) -> str:
 
 
 def _get_comments(
-    comments: CommentsDict | None, key: str | int
+    comments: CommentsDict | None,
+    key: str | int,
 ) -> tuple[str | None, CommentsDict | None]:
     if comments is not None:
         comments = comments.pop(key, None)
@@ -120,7 +125,7 @@ def _warn_unused(
     if full_key:
         full_key += "."
     for k in comments:
-        warn("Unused comment with key: " + full_key + str(k))
+        warn("Unused comment with key: " + full_key + str(k))  # TODO # noqa: B028
 
 
 def load(
@@ -181,10 +186,7 @@ def loads(
 
 def add_comments(data: str, comments: Comments) -> str:
     header, comments = _get_comments({0: deepcopy(comments)}, 0)
-    if header:
-        header = _make_comment(header) + "\n"
-    else:
-        header = ""
+    header = _make_comment(header) + "\n" if header else ""
     result = []
     stack = []
     line_shift = 0
@@ -207,7 +209,7 @@ def add_comments(data: str, comments: Comments) -> str:
                         comm_coord,
                         comm_coord,
                         "",
-                    )
+                    ),
                 )
                 result.append(
                     TokenInfo(
@@ -216,7 +218,7 @@ def add_comments(data: str, comments: Comments) -> str:
                         comm_coord,
                         comm_coord,
                         "",
-                    )
+                    ),
                 )
                 line_shift += 1
 
@@ -238,7 +240,7 @@ def add_comments(data: str, comments: Comments) -> str:
                 _warn_unused(comments, stack)
                 comments, array_index, key = stack.pop()
 
-        token = TokenInfo(
+        token = TokenInfo(  # TODO # noqa: PLW2901
             token.type,
             token.string,
             (token.start[0] + line_shift, token.start[1]),
@@ -247,7 +249,7 @@ def add_comments(data: str, comments: Comments) -> str:
         )
         result.append(token)
 
-    assert not stack, "Error when adding comments to JSON"
+    assert not stack, "Error when adding comments to JSON"  # TODO # noqa: S101
     return header + untokenize(result)
 
 
@@ -292,7 +294,7 @@ def dumps(
     if comments is None:
         return data
     if indent is None:
-        warn("Can't add comments to non-indented JSON")
+        warn("Can't add comments to non-indented JSON")  # TODO # noqa: B028
         return data
 
     return add_comments(data, comments)
@@ -336,5 +338,5 @@ def dump(
             trailing_comma=trailing_comma,
             comments=comments,
             **kw,
-        )
+        ),
     )
