@@ -14,9 +14,9 @@ r"""JSON with Comments for Python
 from __future__ import annotations
 
 import json
+import warnings
 from json import JSONDecoder, JSONEncoder  # for compatibility
 from typing import TYPE_CHECKING
-from warnings import warn
 
 from jsonc._add_comments import add_comments
 from jsonc._util import _add_trailing_comma, _remove_c_comment, _remove_trailing_comma
@@ -127,7 +127,7 @@ def dumps(
     if comments is None:
         return data
     if indent is None:
-        warn("Can't add comments to non-indented JSON")  # TODO # noqa: B028
+        warnings.warn("Can't add comments to non-indented JSON", stacklevel=2)
         return data
 
     return add_comments(data, comments)

@@ -1,11 +1,12 @@
 from __future__ import annotations
 
+import copy
+import io
 import json
-from copy import deepcopy
-from io import StringIO
+import sys
+import warnings
 from tokenize import COMMENT, NL, STRING, TokenInfo, generate_tokens, untokenize
 from typing import TYPE_CHECKING
-from warnings import warn
 
 if TYPE_CHECKING:
     CommentsDict = dict[str, "Comments"] | dict[int, "Comments"]
@@ -45,18 +46,28 @@ def _warn_unused(
     if full_key:
         full_key += "."
     for k in comments:
-        warn("Unused comment with key: " + full_key + str(k))  # TODO # noqa: B028
+        f = sys._getframe()  # noqa: SLF001
+        filename = f.f_code.co_filename
+        stacklevel = 2
+        while f := f.f_back:
+            if f.f_code.co_filename != filename:
+                break
+            stacklevel += 1
+        warnings.warn(
+            "Unused comment with key: " + full_key + str(k),
+            stacklevel=4,
+        )
 
 
-def add_comments(data: str, comments: Comments) -> str:
-    header, cdict = _get_comments({0: deepcopy(comments)}, 0)
+def add_comments(data: str, comments: Comments) -> str:  # noqa: C901
+    header, cdict = _get_comments({0: copy.deepcopy(comments)}, 0)
     header = _make_comment(header) + "\n" if header else ""
     result = []
     stack = []
     line_shift = 0
     array_index: int | None = None
     key: str | int | None = None
-    for token in generate_tokens(StringIO(data).readline):
+    for token in generate_tokens(io.StringIO(data).readline):
         if (
             token.type == STRING or (array_index is not None and token.string != "]")
         ) and result[-1].type == NL:
@@ -114,5 +125,7 @@ def add_comments(data: str, comments: Comments) -> str:
             ),
         )
 
-    assert not stack, "Error when adding comments to JSON"  # TODO # noqa: S101
+    if stack:
+        msg = "Error when adding comments to JSON"
+        raise ValueError(msg)
     return header + untokenize(result)
