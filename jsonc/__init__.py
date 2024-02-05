@@ -15,10 +15,10 @@ from __future__ import annotations
 
 import json
 import warnings
-from json import JSONDecoder, JSONEncoder  # for compatibility
+from json import JSONDecodeError, JSONDecoder, JSONEncoder
 from typing import TYPE_CHECKING
 
-from jsonc._add_comments import add_comments
+from jsonc._add_comments import _add_comments
 from jsonc._util import _add_trailing_comma, _remove_c_comment, _remove_trailing_comma
 
 if TYPE_CHECKING:
@@ -28,6 +28,15 @@ if TYPE_CHECKING:
     from jsonc._add_comments import Comments
 
 __version__ = "0.0.0"
+__all__ = [
+    "dump",
+    "dumps",
+    "load",
+    "loads",
+    "JSONDecoder",
+    "JSONDecodeError",
+    "JSONEncoder",
+]
 
 
 def load(
@@ -130,7 +139,7 @@ def dumps(
         warnings.warn("Can't add comments to non-indented JSON", stacklevel=2)
         return data
 
-    return add_comments(data, comments)
+    return _add_comments(data, comments)
 
 
 def dump(

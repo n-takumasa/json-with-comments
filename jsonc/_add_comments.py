@@ -59,7 +59,7 @@ def _warn_unused(
         )
 
 
-def add_comments(data: str, comments: Comments) -> str:  # noqa: C901
+def _add_comments(data: str, comments: Comments) -> str:  # noqa: C901
     header, cdict = _get_comments({0: copy.deepcopy(comments)}, 0)
     header = _make_comment(header) + "\n" if header else ""
     result = []
