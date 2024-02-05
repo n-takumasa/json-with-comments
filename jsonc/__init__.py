@@ -13,119 +13,21 @@ r"""JSON with Comments for Python
 
 from __future__ import annotations
 
-from copy import deepcopy
-from io import StringIO
-from tokenize import COMMENT, NL, STRING, TokenInfo, generate_tokens, untokenize
-from typing import TYPE_CHECKING, Any, TextIO
+import json
+from json import JSONDecoder, JSONEncoder  # for compatibility
+from typing import TYPE_CHECKING
 from warnings import warn
 
-__version__ = "0.0.0"
-import json
-import re
-from json import JSONDecoder, JSONEncoder  # for compatibility
+from jsonc._add_comments import add_comments
+from jsonc._util import _add_trailing_comma, _remove_c_comment, _remove_trailing_comma
 
 if TYPE_CHECKING:
     from collections.abc import Callable
+    from typing import Any, TextIO
 
-    CommentsDict = dict[str, "Comments"] | dict[int, "Comments"]
-    Comments = str | CommentsDict | tuple[str, CommentsDict]
+    from jsonc._add_comments import Comments
 
-
-_REMOVE_C_COMMENT = r"""
-    ( # String Literal
-        \"(?:\\.|[^\\\"])*?\"
-    )
-    |
-    ( # Comment
-        \/\*.*?\*\/
-        |
-        \/\/[^\r\n]*?(?:[\r\n])
-    )
-    """
-
-
-_REMOVE_TRAILING_COMMA = r"""
-    ( # String Literal
-        \"(?:\\.|[^\\\"])*?\"
-    )
-    | # Right Brace without Trailing Comma & Spaces
-    ,\s*([\]}])
-"""
-
-
-_ADD_TRAILING_COMMA = r"""
-    ( # String Literal
-        \"(?:\\.|[^\\\"])*?\"
-    )
-    | # Don't match opening braces to avoid {,}
-    ((?<=\")|[^,\[{\s])
-    (?=\s*([\]}]))
-"""
-
-
-def _remove_c_comment(text: str) -> str:
-    if text[-1] != "\n":
-        text = text + "\n"
-    return re.sub(
-        _REMOVE_C_COMMENT,
-        lambda x: x.group(1),
-        text,
-        flags=re.DOTALL | re.VERBOSE,
-    )
-
-
-def _remove_trailing_comma(text: str) -> str:
-    return re.sub(
-        _REMOVE_TRAILING_COMMA,
-        lambda x: x.group(1) or x.group(2),
-        text,
-        flags=re.DOTALL | re.VERBOSE,
-    )
-
-
-def _add_trailing_comma(text: str) -> str:
-    return re.sub(
-        _ADD_TRAILING_COMMA,
-        lambda x: x.group(1) or x.group(2) + ",",
-        text,
-        flags=re.DOTALL | re.VERBOSE,
-    )
-
-
-def _make_comment(text: str, indent=0) -> str:
-    return "\n".join(
-        " " * indent + "// " + line if line else "" for line in text.splitlines()
-    )
-
-
-def _get_comments(
-    comments: CommentsDict | None,
-    key: str | int,
-) -> tuple[str | None, CommentsDict | None]:
-    if comments is not None:
-        comments = comments.pop(key, None)
-        if isinstance(comments, tuple):
-            comm, comments = comments
-        elif isinstance(comments, str):
-            comm = comments
-            comments = None
-        else:
-            comm = None
-        return comm, comments
-    return None, None
-
-
-def _warn_unused(
-    comments: CommentsDict | None,
-    stack: list[tuple[CommentsDict | None, int | None, str | int]],
-):
-    if not comments:
-        return
-    full_key = ".".join(str(key) for _, _, key in stack[1:])
-    if full_key:
-        full_key += "."
-    for k in comments:
-        warn("Unused comment with key: " + full_key + str(k))  # TODO # noqa: B028
+__version__ = "0.0.0"
 
 
 def load(
@@ -182,75 +84,6 @@ def loads(
         object_pairs_hook=object_pairs_hook,
         **kw,
     )
-
-
-def add_comments(data: str, comments: Comments) -> str:
-    header, comments = _get_comments({0: deepcopy(comments)}, 0)
-    header = _make_comment(header) + "\n" if header else ""
-    result = []
-    stack = []
-    line_shift = 0
-    array_index: int | None = None
-    key: str | int | None = None
-    for token in generate_tokens(StringIO(data).readline):
-        if (
-            token.type == STRING or (array_index is not None and token.string != "]")
-        ) and result[-1].type == NL:
-            key = array_index if array_index is not None else json.loads(token.string)
-            stack.append((comments, array_index, key))
-            comm, comments = _get_comments(comments, key)
-            if comm:
-                comm = _make_comment(comm, token.start[1])
-                comm_coord = (token.start[0] + line_shift, 0)
-                result.append(
-                    TokenInfo(
-                        COMMENT,
-                        comm,
-                        comm_coord,
-                        comm_coord,
-                        "",
-                    ),
-                )
-                result.append(
-                    TokenInfo(
-                        NL,
-                        "\n",
-                        comm_coord,
-                        comm_coord,
-                        "",
-                    ),
-                )
-                line_shift += 1
-
-        if token.string == ",":
-            _warn_unused(comments, stack)
-            comments, array_index, key = stack.pop()
-            if array_index is not None:
-                array_index += 1
-        elif token.string == "[":
-            stack.append((comments, array_index, key))
-            array_index = 0
-        elif token.string == "{":
-            stack.append((comments, array_index, key))
-            array_index = None
-        elif token.string in {"]", "}"}:
-            _warn_unused(comments, stack)
-            comments, array_index, key = stack.pop()
-            if result[-1].type == NL and result[-2].string != ",":
-                _warn_unused(comments, stack)
-                comments, array_index, key = stack.pop()
-
-        token = TokenInfo(  # TODO # noqa: PLW2901
-            token.type,
-            token.string,
-            (token.start[0] + line_shift, token.start[1]),
-            (token.end[0] + line_shift, token.end[1]),
-            token.line,
-        )
-        result.append(token)
-
-    assert not stack, "Error when adding comments to JSON"  # TODO # noqa: S101
-    return header + untokenize(result)
 
 
 def dumps(
