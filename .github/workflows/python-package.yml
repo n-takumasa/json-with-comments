@@ -27,7 +27,7 @@ jobs:
         python-version: ${{ matrix.python-version }}
         allow-prereleases: true
     - name: Setup Poetry
-      uses: Gr1N/setup-poetry@v8
+      uses: Gr1N/setup-poetry@v9
     - name: Install depencencies
       run: poetry install
     - name: Run tox-gh-actions
