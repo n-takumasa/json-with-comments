@@ -3,6 +3,7 @@ from __future__ import annotations
 import copy
 import io
 import json
+import os
 import sys
 import warnings
 from tokenize import COMMENT, NL, STRING, TokenInfo, generate_tokens, untokenize
@@ -11,6 +12,8 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     CommentsDict = dict[str, "Comments"] | dict[int, "Comments"]
     Comments = str | CommentsDict | tuple[str, CommentsDict]
+
+_warn_skips = (os.path.dirname(__file__),)  # noqa: PTH120
 
 
 def _make_comment(text: str, indent=0) -> str:
@@ -46,17 +49,11 @@ def _warn_unused(
     if full_key:
         full_key += "."
     for k in comments:
-        f = sys._getframe()  # noqa: SLF001
-        filename = f.f_code.co_filename
-        stacklevel = 2
-        while f := f.f_back:
-            if f.f_code.co_filename != filename:
-                break
-            stacklevel += 1
-        warnings.warn(
-            "Unused comment with key: " + full_key + str(k),
-            stacklevel=4,
-        )
+        msg = f"Unused comment with key: {full_key}{k}"
+        if sys.version_info >= (3, 12):
+            warnings.warn(msg, stacklevel=2, skip_file_prefixes=_warn_skips)
+        else:
+            warnings.warn(msg, stacklevel=4)
 
 
 def _add_comments(data: str, comments: Comments) -> str:  # noqa: C901
