@@ -23,7 +23,7 @@ from jsonc._util import _add_trailing_comma, _remove_c_comment, _remove_trailing
 
 if TYPE_CHECKING:
     from collections.abc import Callable
-    from typing import Any, TextIO
+    from typing import Any, IO
 
     from jsonc._add_comments import Comments
 
@@ -40,7 +40,7 @@ __all__ = [
 
 
 def load(
-    fp: TextIO,
+    fp: IO[str],
     *,
     cls: type[json.JSONDecoder] | None = None,
     object_hook: Callable[[dict[Any, Any]], Any] | None = None,
@@ -144,7 +144,7 @@ def dumps(
 
 def dump(
     obj: Any,
-    fp: TextIO,
+    fp: IO[str],
     *,
     skipkeys=False,
     ensure_ascii=True,
