@@ -7,19 +7,22 @@ source = "vcs"
 
 [project]
 name = "json-with-comments"
-description = "JSON with Comments for Python"
+description = "JSON with Comments (jsonc) for Python"
+readme = "README.md"
+requires-python = ">=3.7"
 license = "MIT"
 authors = [
   { name = "Takumasa Nakamura", email = "n.takumasa@gmail.com" },
 ]
-readme = "README.md"
-repository = "https://github.com/n-takumasa/json-with-comments"
+keywords = ["jsonc", "json with comments"]
 classifiers = [
   "Topic :: Software Development :: Libraries :: Python Modules",
 ]
 dependencies = []
-requires-python = ">= 3.7"
 dynamic = ["version"]
+
+[project.urls]
+Repository = "https://github.com/n-takumasa/json-with-comments"
 
 [tool.rye]
 managed = true
