@@ -1,32 +1,36 @@
 [build-system]
-requires = ["poetry-core>=1.0.0", "poetry-dynamic-versioning>=1.0.0,<2.0.0"]
-build-backend = "poetry_dynamic_versioning.backend"
+requires = ["hatchling", "hatch-vcs"]
+build-backend = "hatchling.build"
 
-[tool.poetry-dynamic-versioning]
-enable = true
+[tool.hatch.version]
+source = "vcs"
 
-[tool.poetry]
+[project]
 name = "json-with-comments"
-version = "0.0.0"
 description = "JSON with Comments for Python"
 license = "MIT"
-authors = ["Takumasa Nakamura <n.takumasa@gmail.com>"]
+authors = [
+  { name = "Takumasa Nakamura", email = "n.takumasa@gmail.com" },
+]
 readme = "README.md"
 repository = "https://github.com/n-takumasa/json-with-comments"
 classifiers = [
-    "Topic :: Software Development :: Libraries :: Python Modules"
+  "Topic :: Software Development :: Libraries :: Python Modules",
 ]
-packages = [
-    { include = "jsonc" },
+dependencies = []
+requires-python = ">= 3.7"
+dynamic = ["version"]
+
+[tool.rye]
+managed = true
+dev-dependencies = [
+    "pytest>=8.1.1",
+    "tox>=4.14.2",
+    "ruff>=0.3.7",
 ]
 
-[tool.poetry.dependencies]
-python = ">=3.7"
-
-[tool.poetry.group.dev.dependencies]
-pytest = "*"
-tox = ">=3.27,<5.0"
-ruff = ">=0.2,<0.4"
+[tool.hatch.build.targets.wheel]
+packages = ["jsonc"]
 
 [tool.ruff]
 target-version = "py38"
