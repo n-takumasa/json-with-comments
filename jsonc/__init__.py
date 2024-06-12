@@ -1,14 +1,14 @@
 r"""JSON with Comments for Python
 
-    >>> import jsonc
-    >>> jsonc.loads("{// comment \n}")
-    {}
-    >>> jsonc.loads("{/* comment */}")
-    {}
-    >>> jsonc.loads('{"spam": "ham // egg" /* comment */}')
-    {'spam': 'ham // egg'}
-    >>> jsonc.loads('{"spam": /* comment */"ham /* egg */"}')
-    {'spam': 'ham /* egg */'}
+>>> import jsonc
+>>> jsonc.loads("{// comment \n}")
+{}
+>>> jsonc.loads("{/* comment */}")
+{}
+>>> jsonc.loads('{"spam": "ham // egg" /* comment */}')
+{'spam': 'ham // egg'}
+>>> jsonc.loads('{"spam": /* comment */"ham /* egg */"}')
+{'spam': 'ham /* egg */'}
 """
 
 from __future__ import annotations
