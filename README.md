@@ -1,6 +1,6 @@
 # JSON with Comments for Python
 [![pypi version](https://img.shields.io/pypi/v/json-with-comments.svg)](https://pypi.python.org/project/json-with-comments)
-[![Python package](https://github.com/n-takumasa/json-with-comments/actions/workflows/python-package.yml/badge.svg)](https://github.com/n-takumasa/json-with-comments/actions/workflows/python-package.yml)
+[![Python package](https://github.com/n-takumasa/json-with-comments/actions/workflows/test.yml/badge.svg)](https://github.com/n-takumasa/json-with-comments/actions/workflows/test.yml)
 [![Python Versions](https://img.shields.io/pypi/pyversions/json-with-comments.svg)](https://pypi.org/project/json-with-comments/)
 
 ## Features
