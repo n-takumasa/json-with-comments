@@ -7,16 +7,16 @@ import os
 import sys
 import warnings
 from tokenize import COMMENT, NL, STRING, TokenInfo, generate_tokens, untokenize
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
     CommentsDict = dict[str, "Comments"] | dict[int, "Comments"]
     Comments = str | CommentsDict | tuple[str, CommentsDict]
 
-_warn_skips = (os.path.dirname(__file__),)  # noqa: PTH120
+_warn_skips = (os.path.dirname(__file__),)
 
 
-def _make_comment(text: str, indent=0) -> str:
+def _make_comment(text: str, indent: int = 0) -> str:
     return "\n".join(
         " " * indent + "// " + line if line else "" for line in text.splitlines()
     )
@@ -27,7 +27,7 @@ def _get_comments(
     key: str | int,
 ) -> tuple[str | None, CommentsDict | None]:
     if comments is not None:
-        cbody: Comments | None = comments.pop(key, None)  # type: ignore[reportGeneralTypeIssues]
+        cbody: Comments | None = comments.pop(key, None)  # type: ignore[arg-type]
         if isinstance(cbody, tuple):
             chead, cbody = cbody
         elif isinstance(cbody, str):
@@ -42,7 +42,7 @@ def _get_comments(
 def _warn_unused(
     comments: CommentsDict | None,
     stack: list[tuple[CommentsDict | None, int | None, str | int]],
-):
+) -> None:
     if not comments:
         return
     full_key = ".".join(str(key) for _, _, key in stack[1:])
@@ -56,11 +56,11 @@ def _warn_unused(
             warnings.warn(msg, stacklevel=4)
 
 
-def _add_comments(data: str, comments: Comments) -> str:  # noqa: C901
+def _add_comments(data: str, comments: Comments) -> str:
     header, cdict = _get_comments({0: copy.deepcopy(comments)}, 0)
     header = _make_comment(header) + "\n" if header else ""
-    result = []
-    stack = []
+    result: list[TokenInfo] = []
+    stack: list[Any] = []
     line_shift = 0
     array_index: int | None = None
     key: str | int | None = None
@@ -70,7 +70,7 @@ def _add_comments(data: str, comments: Comments) -> str:  # noqa: C901
         ) and result[-1].type == NL:
             key = array_index if array_index is not None else json.loads(token.string)
             stack.append((cdict, array_index, key))
-            comm, cdict = _get_comments(cdict, key)  # type: ignore[reportGeneralTypeIssues]
+            comm, cdict = _get_comments(cdict, key)  # type: ignore[unused-ignore,reportGeneralTypeIssues]
             if comm:
                 comm = _make_comment(comm, token.start[1])
                 comm_coord = (token.start[0] + line_shift, 0)
@@ -125,4 +125,4 @@ def _add_comments(data: str, comments: Comments) -> str:  # noqa: C901
     if stack:
         msg = "Error when adding comments to JSON"
         raise ValueError(msg)
-    return header + untokenize(result)
+    return header + untokenize(result)  # type: ignore[no-any-return]

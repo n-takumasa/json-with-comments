@@ -44,13 +44,13 @@ __all__ = [
 def load(
     fp: SupportsRead[str],
     *,
-    cls: type[json.JSONDecoder] | None = None,
+    cls: type[JSONDecoder] | None = None,
     object_hook: Callable[[dict[Any, Any]], Any] | None = None,
     parse_float: Callable[[str], Any] | None = None,
     parse_int: Callable[[str], Any] | None = None,
     parse_constant: Callable[[str], Any] | None = None,
     object_pairs_hook: Callable[[list[tuple[Any, Any]]], Any] | None = None,
-    **kw: dict[str, Any],
+    **kwds: Any,
 ) -> Any:
     """Deserialize ``fp`` (a ``.read()``-supporting file-like object containing
     a JSON document) to a Python object.
@@ -65,23 +65,23 @@ def load(
         parse_int=parse_int,
         parse_constant=parse_constant,
         object_pairs_hook=object_pairs_hook,
-        **kw,
+        **kwds,
     )
 
 
 def loads(
     s: str,
     *,
-    cls: type[json.JSONDecoder] | None = None,
+    cls: type[JSONDecoder] | None = None,
     object_hook: Callable[[dict[Any, Any]], Any] | None = None,
     parse_float: Callable[[str], Any] | None = None,
     parse_int: Callable[[str], Any] | None = None,
     parse_constant: Callable[[str], Any] | None = None,
     object_pairs_hook: Callable[[list[tuple[Any, Any]]], Any] | None = None,
-    **kw: dict[str, Any],
+    **kwds: Any,
 ) -> Any:
-    """Deserialize ``s`` (a ``str``, ``bytes`` or ``bytearray`` instance
-    containing a JSON document) to a Python object.
+    """Deserialize ``s`` (a ``str`` instance containing a JSON document)
+    to a Python object.
 
     Reference: ``json.loads``
     """
@@ -93,25 +93,25 @@ def loads(
         parse_int=parse_int,
         parse_constant=parse_constant,
         object_pairs_hook=object_pairs_hook,
-        **kw,
+        **kwds,
     )
 
 
 def dumps(
     obj: Any,
     *,
-    skipkeys=False,
-    ensure_ascii=True,
-    check_circular=True,
-    allow_nan=True,
+    skipkeys: bool = False,
+    ensure_ascii: bool = True,
+    check_circular: bool = True,
+    allow_nan: bool = True,
     cls: type[JSONEncoder] | None = None,
-    indent: int | None = None,
+    indent: None | int | str = None,
     separators: tuple[str, str] | None = None,
     default: Callable[[Any], Any] | None = None,
-    sort_keys=False,
-    trailing_comma=False,
+    sort_keys: bool = False,
+    trailing_comma: bool = False,
     comments: Comments | None = None,
-    **kw,
+    **kwds: Any,
 ) -> str:
     """Serialize ``obj`` to a JSON formatted ``str``.
 
@@ -129,7 +129,7 @@ def dumps(
         separators=separators,
         default=default,
         sort_keys=sort_keys,
-        **kw,
+        **kwds,
     )
 
     if trailing_comma:
@@ -148,19 +148,19 @@ def dump(
     obj: Any,
     fp: SupportsWrite[str],
     *,
-    skipkeys=False,
-    ensure_ascii=True,
-    check_circular=True,
-    allow_nan=True,
+    skipkeys: bool = False,
+    ensure_ascii: bool = True,
+    check_circular: bool = True,
+    allow_nan: bool = True,
     cls: type[JSONEncoder] | None = None,
-    indent: int | None = None,
+    indent: None | int | str = None,
     separators: tuple[str, str] | None = None,
     default: Callable[[Any], Any] | None = None,
-    sort_keys=False,
-    trailing_comma=False,
+    sort_keys: bool = False,
+    trailing_comma: bool = False,
     comments: Comments | None = None,
-    **kw,
-):
+    **kwds: Any,
+) -> None:
     """Serialize ``obj`` as a JSON formatted stream to ``fp`` (a
     ``.write()``-supporting file-like object).
 
@@ -181,6 +181,6 @@ def dump(
             sort_keys=sort_keys,
             trailing_comma=trailing_comma,
             comments=comments,
-            **kw,
+            **kwds,
         ),
     )
