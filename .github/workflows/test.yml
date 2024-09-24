@@ -15,28 +15,71 @@ env:
   FORCE_COLOR: "1"
 
 jobs:
+  check:
+    name: Static analysis
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version-file: "pyproject.toml"
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+      - run: uv venv
+      - name: Install tox
+        run: uv pip install tox tox-uv
+      - name: Run static analysis
+        run: uv run tox run -e lint
+      - name: Run mypy
+        run: uv run tox run -e type
+
   run:
-    name: Python ${{ matrix.python-version }} on ${{ startsWith(matrix.os, 'macos-') && 'macOS' || startsWith(matrix.os, 'windows-') && 'Windows' || 'Linux' }}
+    needs: check
+    name: ${{ startsWith(matrix.python-version, 'pypy') && 'PyPy' || 'CPython' }} ${{ matrix.python-version }} on ${{ startsWith(matrix.os, 'macos-') && 'macOS' || startsWith(matrix.os, 'windows-') && 'Windows' || 'Linux' }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
-        python-version: ['3.8', '3.9', '3.10', '3.11', '3.12']
+        os: [ubuntu-latest]
+        python-version:
+          - "3.7"
+          - "3.8"
+          - "3.9"
+          - "3.10"
+          - "3.11"
+          - "3.12"
+          - "3.13"
+          - "pypy3.7"
+          - "pypy3.8"
+          - "pypy3.9"
+          - "pypy3.10"
+        include:
+          - os: windows-latest
+            python-version: 3.12
+          - os: macos-latest
+            python-version: 3.12
 
     steps:
-    - uses: actions/checkout@v4
-
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v5
-      with:
-        python-version: ${{ matrix.python-version }}
-
-    - name: Install Hatch
-      run: pip install --upgrade hatch
-
-    - name: Run static analysis
-      run: hatch fmt --check
-
-    - name: Run tests
-      run: hatch test --python ${{ matrix.python-version }} --cover --randomize --parallel --retries 2 --retry-delay 1
+      - uses: actions/checkout@v4
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          allow-prereleases: true
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+      - run: uv venv
+      - name: Install tox
+        if: ${{ ! endsWith(matrix.python-version, '3.7') }}
+        run: uv pip install tox tox-uv tox-gh-actions
+      - name: Run tests
+        if: ${{ ! endsWith(matrix.python-version, '3.7') }}
+        run: uv run tox
+      - name: Install deps (Python 3.7)
+        if: ${{ endsWith(matrix.python-version, '3.7') }}
+        run: |
+          uv pip install pytest pytest-cov
+          uv pip install -e .
+      - name: Run tests (Python 3.7)
+        if: ${{ endsWith(matrix.python-version, '3.7') }}
+        run: uv run python -m pytest .

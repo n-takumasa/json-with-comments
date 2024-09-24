@@ -27,5 +27,7 @@ pip install json-with-comments
 {'spam': 'ham // egg'}
 >>> jsonc.loads('{"spam": /* comment */"ham /* egg */"}')
 {'spam': 'ham /* egg */'}
+
 ```
+
 And just like `json` module
