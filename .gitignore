@@ -12,3 +12,9 @@ wheels/
 # lock
 .python-version
 requirements*.lock
+
+# hatch-vcs
+src/jsonc/_version.py
+
+# coverage
+.coverage

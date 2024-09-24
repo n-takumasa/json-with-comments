@@ -2,62 +2,71 @@
 requires = ["hatchling", "hatch-vcs"]
 build-backend = "hatchling.build"
 
-[tool.hatch.version]
-source = "vcs"
+[tool.hatch]
+version.source = "vcs"
+build.hooks.vcs.version-file = "src/jsonc/_version.py"
+build.targets.sdist.exclude = [
+  "/.github"
+]
+build.targets.wheel.packages = ["src/jsonc"]
 
 [project]
+dynamic = ["version"]
 name = "json-with-comments"
 description = "JSON with Comments (jsonc) for Python"
 readme = "README.md"
 requires-python = ">=3.7"
-license = "MIT"
+license = { text = "MIT" }
 authors = [
   { name = "Takumasa Nakamura", email = "n.takumasa@gmail.com" },
 ]
 keywords = ["jsonc", "json with comments"]
 classifiers = [
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3.7",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: Implementation :: CPython",
+  "Programming Language :: Python :: Implementation :: PyPy",
   "Topic :: Software Development :: Libraries :: Python Modules",
 ]
+urls.Repository = "https://github.com/n-takumasa/json-with-comments"
+
 dependencies = []
-dynamic = ["version"]
 
-[project.urls]
-Repository = "https://github.com/n-takumasa/json-with-comments"
-
-[tool.hatch.build.targets.sdist]
-exclude = [
-  "/.github"
-]
-
-[tool.hatch.build.targets.wheel]
-packages = ["jsonc"]
+[tool.uv]
+managed = false
 
 [[tool.hatch.envs.test.matrix]]
 python = ["3.7", "3.8", "3.9", "3.10", "3.11", "3.12"]
 
 [tool.ruff]
-target-version = "py38"
 line-length = 88
-
-[tool.ruff.lint]
-select = ["ALL"]
-ignore = [
-  "ANN",     # flake8-annotations
-  "D",       # pydocstyle
-  "FIX",     # flake8-fixme
-  "TD",      # flake8-todos
-  "PTH123",  # flake8-use-pathlib: builtin-open
-  "PLR0913", # too-many-arguments
-  # Conflicting lint rules
-  "W191", "E111", "E114", "E117", "D206", "D300", "Q000", "Q001", "Q002", "Q003",
-  "COM812", "COM819", "ISC001", "ISC002", "E501",
+lint.extend-select = [
+  "B",  # flake8-bugbear
+  "I",  # isort
+  "UP",  # pyupgrade
 ]
 
-[tool.ruff.lint.per-file-ignores]
-"__init__.py" = [
-  "F401", # Pyflakes: unused-import
+[tool.coverage]
+run.source_pkgs = ["jsonc", "tests"]
+run.branch = true
+run.parallel = true
+report.exclude_lines = [
+  "no cov",
+  "if __name__ == .__main__.:",
+  "if TYPE_CHECKING:",
+  "@overload",
 ]
-"**/tests/**/*.py" = [
-  "S101",    # flake8-bandit: assert
-  "PLR2004", # magic-value-comparison
-]
+
+[tool.mypy]
+files = "src"
+strict = true
+warn_unreachable = true
+enable_error_code = ["ignore-without-code", "redundant-expr", "truthy-bool"]

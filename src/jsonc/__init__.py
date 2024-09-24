@@ -20,6 +20,7 @@ from typing import TYPE_CHECKING
 
 from jsonc._add_comments import _add_comments
 from jsonc._util import _add_trailing_comma, _remove_c_comment, _remove_trailing_comma
+from jsonc._version import __version__
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -28,8 +29,8 @@ if TYPE_CHECKING:
     from jsonc._add_comments import Comments
     from jsonc._types import SupportsRead, SupportsWrite
 
-__version__ = "0.0.0"
 __all__ = [
+    "__version__",
     "dump",
     "dumps",
     "load",
