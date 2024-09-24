@@ -41,7 +41,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: pypi
-      url: https://pypi.org/p/janaf
+      url: https://pypi.org/p/json-with-comments
     permissions:
       id-token: write # IMPORTANT: mandatory for trusted publishing
 
