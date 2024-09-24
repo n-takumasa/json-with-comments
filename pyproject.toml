@@ -54,6 +54,10 @@ lint.extend-select = [
   "UP",  # pyupgrade
 ]
 
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = "--doctest-modules --doctest-glob='*.md' --ignore='src/jsonc/_types.py'"
+
 [tool.coverage]
 run.source_pkgs = ["jsonc", "tests"]
 run.branch = true
