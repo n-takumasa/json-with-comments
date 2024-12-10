@@ -85,8 +85,8 @@ jobs:
           GITHUB_REPOSITORY: ${{ github.repository }}
         run: >-
           gh release create
-          '$GITHUB_REF_NAME'
-          --repo '$GITHUB_REPOSITORY'
+          "$GITHUB_REF_NAME"
+          --repo "$GITHUB_REPOSITORY"
           --notes ""
       - name: Upload artifact signatures to GitHub Release
         env:
@@ -98,5 +98,5 @@ jobs:
         # sigstore-produced signatures and certificates.
         run: >-
           gh release upload
-          '$GITHUB_REF_NAME' dist/**
-          --repo '$GITHUB_REPOSITORY'
+          "$GITHUB_REF_NAME" dist/**
+          --repo "$GITHUB_REPOSITORY"
