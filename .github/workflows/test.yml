@@ -35,29 +35,25 @@ jobs:
 
   run:
     needs: check
-    name: ${{ startsWith(matrix.python-version, 'pypy') && 'PyPy' || 'CPython' }} ${{ matrix.python-version }} on ${{ startsWith(matrix.os, 'macos-') && 'macOS' || startsWith(matrix.os, 'windows-') && 'Windows' || 'Linux' }}
+    name: CPython ${{ matrix.python-version }} on ${{ startsWith(matrix.os, 'macos-') && 'macOS' || startsWith(matrix.os, 'windows-') && 'Windows' || 'Linux' }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
         python-version:
-          - "3.7"
           - "3.8"
           - "3.9"
           - "3.10"
           - "3.11"
           - "3.12"
           - "3.13"
-          - "pypy3.7"
-          - "pypy3.8"
-          - "pypy3.9"
-          - "pypy3.10"
+          - "3.14"
         include:
           - os: windows-latest
-            python-version: 3.12
+            python-version: 3.14
           - os: macos-latest
-            python-version: 3.12
+            python-version: 3.14
 
     steps:
       - uses: actions/checkout@v6
@@ -70,16 +66,6 @@ jobs:
         uses: astral-sh/setup-uv@v7
       - run: uv venv
       - name: Install tox
-        if: ${{ ! endsWith(matrix.python-version, '3.7') }}
         run: uv pip install tox tox-uv tox-gh-actions
       - name: Run tests
-        if: ${{ ! endsWith(matrix.python-version, '3.7') }}
         run: uv run tox
-      - name: Install deps (Python 3.7)
-        if: ${{ endsWith(matrix.python-version, '3.7') }}
-        run: |
-          uv pip install pytest pytest-cov
-          uv pip install -e .
-      - name: Run tests (Python 3.7)
-        if: ${{ endsWith(matrix.python-version, '3.7') }}
-        run: uv run python -m pytest .
