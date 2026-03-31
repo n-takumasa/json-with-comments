@@ -3,76 +3,61 @@ name: test
 on:
   workflow_dispatch:
   push:
-    branches: [main, master]
+    branches: [main]
   pull_request:
-    branches: [main, master]
+    branches: [main]
 
 permissions: {}
 
 concurrency:
-  group: test-${{ github.head_ref }}
+  group: test-${{ github.ref }}
   cancel-in-progress: true
 
 env:
   PYTHONUNBUFFERED: "1"
   FORCE_COLOR: "1"
+  RUFF_OUTPUT_FORMAT: "github"
 
 jobs:
-  check:
-    name: Static analysis
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-        with:
-          persist-credentials: false
-      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
-        with:
-          python-version-file: "pyproject.toml"
-      - name: Install uv
-        uses: astral-sh/setup-uv@37802adc94f370d6bfd71619e3f0bf239e1f3b78 # v7.6.0
-      - run: uv venv
-      - name: Install tox
-        run: uv pip install tox tox-uv
-      - name: Run static analysis
-        run: uv run tox run -e lint
-      - name: Run mypy
-        run: uv run tox run -e type
-
   run:
-    needs: check
-    name: CPython ${{ matrix.python-version }} on ${{ startsWith(matrix.os, 'macos-') && 'macOS' || startsWith(matrix.os, 'windows-') && 'Windows' || 'Linux' }}
+    name: test with ${{ matrix.env }} on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        python-version:
-          - "3.8"
-          - "3.9"
-          - "3.10"
-          - "3.11"
-          - "3.12"
-          - "3.13"
-          - "3.14"
+        env: ["3.14", "3.13", "3.12", "3.11", "3.10", "3.9", "3.8"]
         include:
           - os: windows-latest
-            python-version: 3.14
+            env: "3.14"
           - os: macos-latest
-            python-version: 3.14
-
+            env: "3.14"
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           persist-credentials: false
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+      - uses: astral-sh/setup-uv@37802adc94f370d6bfd71619e3f0bf239e1f3b78 # v7.6.0
         with:
-          python-version: ${{ matrix.python-version }}
-          allow-prereleases: true
-      - name: Install uv
-        uses: astral-sh/setup-uv@37802adc94f370d6bfd71619e3f0bf239e1f3b78 # v7.6.0
-      - run: uv venv
+          enable-cache: false
       - name: Install tox
-        run: uv pip install tox tox-uv tox-gh-actions
-      - name: Run tests
-        run: uv run tox
+        run: >-
+          uv tool install
+          --python-preference only-managed
+          --python 3.14
+          tox
+          --with tox-uv
+          --with tox-gh
+      - name: Install Python
+        if: matrix.env != '3.14'
+        run: >-
+          uv python install
+          --python-preference only-managed
+          ${{ matrix.env }}
+      - name: Setup test suite
+        run: tox run -vv --notest --skip-missing-interpreters false
+        env:
+          TOX_GH_MAJOR_MINOR: ${{ matrix.env }}
+      - name: Run test suite
+        run: tox run --skip-pkg-install
+        env:
+          TOX_GH_MAJOR_MINOR: ${{ matrix.env }}
