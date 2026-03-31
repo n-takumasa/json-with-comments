@@ -26,17 +26,14 @@ def _get_comments(
     comments: CommentsDict | None,
     key: str | int,
 ) -> tuple[str | None, CommentsDict | None]:
-    if comments is not None:
-        cbody: Comments | None = comments.pop(key, None)  # type: ignore[arg-type]
-        if isinstance(cbody, tuple):
-            chead, cbody = cbody
-        elif isinstance(cbody, str):
-            chead = cbody
-            cbody = None
-        else:
-            chead = None
-        return chead, cbody
-    return None, None
+    if comments is None: reurn None, None
+    cbody: Comments | None = comments.pop(key, None)  # type: ignore[arg-type]
+    if isinstance(cbody, tuple):
+        return cbody
+    elif isinstance(cbody, str):
+        return cbody, None
+    else:
+        return None, cbody
 
 
 def _warn_unused(
