@@ -48,9 +48,4 @@ def _remove_trailing_comma(text: str) -> str:
 
 
 def _add_trailing_comma(text: str) -> str:
-    return re.sub(
-        _ADD_TRAILING_COMMA,
-        lambda x: x.group(1) or x.group(2) + ",",
-        text,
-        flags=re.DOTALL | re.VERBOSE,
-    )
+    return _ADD_TRAILING_COMMA.sub(lambda x: x.group(1) or x.group(2) + ",", text)
