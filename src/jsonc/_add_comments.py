@@ -125,4 +125,4 @@ def _add_comments(data: str, comments: Comments) -> str:
     if stack:
         msg = "Error when adding comments to JSON"
         raise ValueError(msg)
-    return header + untokenize(result)  # type: ignore[no-any-return]
+    return header + untokenize(result)

@@ -15,7 +15,7 @@ dynamic = ["version"]
 name = "json-with-comments"
 description = "JSON with Comments (jsonc) for Python"
 readme = "README.md"
-requires-python = ">=3.7"
+requires-python = ">=3.8"
 license = { text = "MIT" }
 authors = [
   { name = "Takumasa Nakamura", email = "n.takumasa@gmail.com" },
@@ -25,26 +25,37 @@ classifiers = [
   "License :: OSI Approved :: MIT License",
   "Operating System :: OS Independent",
   "Programming Language :: Python",
-  "Programming Language :: Python :: 3.7",
   "Programming Language :: Python :: 3.8",
   "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
   "Programming Language :: Python :: Implementation :: CPython",
-  "Programming Language :: Python :: Implementation :: PyPy",
   "Topic :: Software Development :: Libraries :: Python Modules",
 ]
 urls.Repository = "https://github.com/n-takumasa/json-with-comments"
 
 dependencies = []
 
-[tool.uv]
-managed = false
-
-[[tool.hatch.envs.test.matrix]]
-python = ["3.7", "3.8", "3.9", "3.10", "3.11", "3.12"]
+[dependency-groups]
+test = [
+  "pytest>=8",
+  "pytest-cov",
+  "pytest-github-actions-annotate-failures",
+]
+lint = ["ruff"]
+type_mypy = [
+  "mypy[install-types]",
+]
+dev = [
+  "tox>=4.22",
+  "tox-uv",
+  { include-group = "test" },
+  { include-group = "lint" },
+  { include-group = "type_mypy" },
+]
 
 [tool.ruff]
 line-length = 88
@@ -56,7 +67,18 @@ lint.extend-select = [
 
 [tool.pytest.ini_options]
 minversion = "6.0"
-addopts = "--doctest-modules --doctest-glob='*.md' --ignore='src/jsonc/_types.py'"
+testpaths = ["tests", "src", "README.md"]
+log_cli_level = "INFO"
+xfail_strict = true
+addopts = [
+  "-ra",
+  "--strict-config",
+  "--strict-markers",
+  "-p", "no:faulthandler",
+  "--doctest-modules",
+  "--doctest-glob", "*.md",
+]
+filterwarnings = ["error"]
 
 [tool.coverage]
 run.source_pkgs = ["jsonc", "tests"]
@@ -74,3 +96,51 @@ files = "src"
 strict = true
 warn_unreachable = true
 enable_error_code = ["ignore-without-code", "redundant-expr", "truthy-bool"]
+
+[tool.tox]
+requires = [
+  "tox>=4.21",
+  "tox-uv",
+]
+env_list = [
+  "lint", "type",
+  "3.14", "3.13", "3.12", "3.11", "3.10", "3.9", "3.8",
+]
+
+[tool.tox.gh.python]
+"3.14" = ["3.14"]
+"3.13" = ["3.13", "lint", "type"]
+"3.12" = ["3.12"]
+"3.11" = ["3.11"]
+"3.10" = ["3.10"]
+"3.9" = ["3.9"]
+
+[tool.tox.env_run_base]
+package = "wheel"
+wheel_build_env = ".pkg"
+dependency_groups = ["test"]
+commands = [
+  ["pytest", { replace = "posargs", default = [], extend = true }],
+]
+set_env = { PY_IGNORE_IMPORTMISMATCH = "1" }  # pytest-dev/pytest#9567
+pass_env = [
+  "GITHUB_ACTIONS",
+]
+
+[tool.tox.env.lint]
+package = "skip"
+dependency_groups = ["lint"]
+commands = [
+  ["ruff", "format", "--check", { replace = "posargs", default = [], extend = true }],
+  ["ruff", "check", "--no-fix", { replace = "posargs", default = [], extend = true }],
+]
+pass_env = [
+    "RUFF_OUTPUT_FORMAT",
+]
+
+[tool.tox.env.type_mypy]
+package = "wheel"
+dependency_groups = ["type_mypy"]
+commands = [
+  ["mypy", "--install-types", "--non-interactive", { replace = "posargs", default = [], extend = true }],
+]
