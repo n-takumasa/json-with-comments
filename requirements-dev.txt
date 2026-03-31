@@ -1,6 +1,0 @@
-pytest
-pytest-cov
-ruff
-mypy[install-types]
-tox >= 4
-tox-uv
