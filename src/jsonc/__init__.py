@@ -14,6 +14,7 @@ r"""JSON with Comments for Python
 from __future__ import annotations
 
 import json
+import sys
 import warnings
 from json import JSONDecodeError, JSONDecoder, JSONEncoder
 from typing import TYPE_CHECKING
@@ -41,60 +42,120 @@ __all__ = [
 ]
 
 
-def load(
-    fp: SupportsRead[str],
-    *,
-    cls: type[JSONDecoder] | None = None,
-    object_hook: Callable[[dict[Any, Any]], Any] | None = None,
-    parse_float: Callable[[str], Any] | None = None,
-    parse_int: Callable[[str], Any] | None = None,
-    parse_constant: Callable[[str], Any] | None = None,
-    object_pairs_hook: Callable[[list[tuple[Any, Any]]], Any] | None = None,
-    **kwds: Any,
-) -> Any:
-    """Deserialize ``fp`` (a ``.read()``-supporting file-like object containing
-    a JSON document) to a Python object.
+if sys.version_info >= (3, 15):
 
-    Reference: ``json.load``
-    """
-    return json.loads(
-        _remove_trailing_comma(_remove_c_comment(fp.read())),
-        cls=cls,
-        object_hook=object_hook,
-        parse_float=parse_float,
-        parse_int=parse_int,
-        parse_constant=parse_constant,
-        object_pairs_hook=object_pairs_hook,
-        **kwds,
-    )
+    def load(
+        fp: SupportsRead[str],
+        *,
+        cls: type[JSONDecoder] | None = None,
+        object_hook: Callable[[dict[Any, Any]], Any] | None = None,
+        parse_float: Callable[[str], Any] | None = None,
+        parse_int: Callable[[str], Any] | None = None,
+        parse_constant: Callable[[str], Any] | None = None,
+        object_pairs_hook: Callable[[list[tuple[Any, Any]]], Any] | None = None,
+        array_hook: Callable[[list[Any]], Any] | None = None,
+        **kwds: Any,
+    ) -> Any:
+        """Deserialize ``fp`` (a ``.read()``-supporting file-like object containing
+        a JSON document) to a Python object.
 
+        Reference: ``json.load``
+        """
+        return json.loads(
+            _remove_trailing_comma(_remove_c_comment(fp.read())),
+            cls=cls,
+            object_hook=object_hook,
+            parse_float=parse_float,
+            parse_int=parse_int,
+            parse_constant=parse_constant,
+            object_pairs_hook=object_pairs_hook,
+            array_hook=array_hook,
+            **kwds,
+        )
 
-def loads(
-    s: str,
-    *,
-    cls: type[JSONDecoder] | None = None,
-    object_hook: Callable[[dict[Any, Any]], Any] | None = None,
-    parse_float: Callable[[str], Any] | None = None,
-    parse_int: Callable[[str], Any] | None = None,
-    parse_constant: Callable[[str], Any] | None = None,
-    object_pairs_hook: Callable[[list[tuple[Any, Any]]], Any] | None = None,
-    **kwds: Any,
-) -> Any:
-    """Deserialize ``s`` (a ``str`` instance containing a JSON document)
-    to a Python object.
+    def loads(
+        s: str,
+        *,
+        cls: type[JSONDecoder] | None = None,
+        object_hook: Callable[[dict[Any, Any]], Any] | None = None,
+        parse_float: Callable[[str], Any] | None = None,
+        parse_int: Callable[[str], Any] | None = None,
+        parse_constant: Callable[[str], Any] | None = None,
+        object_pairs_hook: Callable[[list[tuple[Any, Any]]], Any] | None = None,
+        array_hook: Callable[[list[Any]], Any] | None = None,
+        **kwds: Any,
+    ) -> Any:
+        """Deserialize ``s`` (a ``str`` instance containing a JSON document)
+        to a Python object.
 
-    Reference: ``json.loads``
-    """
-    return json.loads(
-        _remove_trailing_comma(_remove_c_comment(s)),
-        cls=cls,
-        object_hook=object_hook,
-        parse_float=parse_float,
-        parse_int=parse_int,
-        parse_constant=parse_constant,
-        object_pairs_hook=object_pairs_hook,
-        **kwds,
-    )
+        Reference: ``json.loads``
+        """
+        return json.loads(
+            _remove_trailing_comma(_remove_c_comment(s)),
+            cls=cls,
+            object_hook=object_hook,
+            parse_float=parse_float,
+            parse_int=parse_int,
+            parse_constant=parse_constant,
+            object_pairs_hook=object_pairs_hook,
+            array_hook=array_hook,
+            **kwds,
+        )
+else:
+
+    def load(
+        fp: SupportsRead[str],
+        *,
+        cls: type[JSONDecoder] | None = None,
+        object_hook: Callable[[dict[Any, Any]], Any] | None = None,
+        parse_float: Callable[[str], Any] | None = None,
+        parse_int: Callable[[str], Any] | None = None,
+        parse_constant: Callable[[str], Any] | None = None,
+        object_pairs_hook: Callable[[list[tuple[Any, Any]]], Any] | None = None,
+        **kwds: Any,
+    ) -> Any:
+        """Deserialize ``fp`` (a ``.read()``-supporting file-like object containing
+        a JSON document) to a Python object.
+
+        Reference: ``json.load``
+        """
+        return json.loads(
+            _remove_trailing_comma(_remove_c_comment(fp.read())),
+            cls=cls,
+            object_hook=object_hook,
+            parse_float=parse_float,
+            parse_int=parse_int,
+            parse_constant=parse_constant,
+            object_pairs_hook=object_pairs_hook,
+            **kwds,
+        )
+
+    def loads(
+        s: str,
+        *,
+        cls: type[JSONDecoder] | None = None,
+        object_hook: Callable[[dict[Any, Any]], Any] | None = None,
+        parse_float: Callable[[str], Any] | None = None,
+        parse_int: Callable[[str], Any] | None = None,
+        parse_constant: Callable[[str], Any] | None = None,
+        object_pairs_hook: Callable[[list[tuple[Any, Any]]], Any] | None = None,
+        **kwds: Any,
+    ) -> Any:
+        """Deserialize ``s`` (a ``str`` instance containing a JSON document)
+        to a Python object.
+
+        Reference: ``json.loads``
+        """
+        return json.loads(
+            _remove_trailing_comma(_remove_c_comment(s)),
+            cls=cls,
+            object_hook=object_hook,
+            parse_float=parse_float,
+            parse_int=parse_int,
+            parse_constant=parse_constant,
+            object_pairs_hook=object_pairs_hook,
+            **kwds,
+        )
 
 
 def dumps(
