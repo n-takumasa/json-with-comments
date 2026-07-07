@@ -1,3 +1,4 @@
+import sys
 from copy import deepcopy
 from io import StringIO
 
@@ -95,3 +96,10 @@ def test_dump():
     o = StringIO()
     dump([], o, indent=2, comments="test")
     assert o.getvalue() == "// test\n[]"
+
+
+@pytest.mark.skipif(sys.version_info < (3, 15), reason="requires python3.15 or higher")
+def test_immutable():
+    obj = loads('{"spam": [1, 2, 3]}', object_hook=frozendict, array_hook=tuple)  # noqa: F821
+    assert obj == frozendict({"spam": (1, 2, 3)})  # noqa: F821
+    hash(obj)
