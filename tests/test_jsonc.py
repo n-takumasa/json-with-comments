@@ -3,7 +3,7 @@ from io import StringIO
 
 import pytest
 
-from jsonc import dump, dumps, load, loads
+from jsonc import JSONDecodeError, dump, dumps, load, loads
 
 
 def test_loads():
@@ -16,6 +16,13 @@ def test_loads():
     assert loads('{"spam": /* comment */"ham /* egg */"}') == {"spam": "ham /* egg */"}
     assert loads(r'"spam\"ham" // egg') == 'spam"ham'
     assert loads(r'"spam\"ham\\" // egg') == 'spam"ham\\'
+
+
+def test_loads_empty():
+    with pytest.raises(JSONDecodeError):
+        loads("")
+    with pytest.raises(JSONDecodeError):
+        loads(" ")
 
 
 def test_load():
