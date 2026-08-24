@@ -71,7 +71,7 @@ lint.extend-select = [
 [tool.pytest.ini_options]
 minversion = "6.0"
 testpaths = ["tests", "src", "README.md"]
-log_cli_level = "INFO"
+log_level = "INFO"
 xfail_strict = true
 addopts = [
   "-ra",
