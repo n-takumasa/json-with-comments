@@ -30,14 +30,14 @@ if TYPE_CHECKING:
     from jsonc._types import SupportsRead, SupportsWrite
 
 __all__ = [
+    "JSONDecodeError",
+    "JSONDecoder",
+    "JSONEncoder",
     "__version__",
     "dump",
     "dumps",
     "load",
     "loads",
-    "JSONDecoder",
-    "JSONDecodeError",
-    "JSONEncoder",
 ]
 
 
