@@ -16,7 +16,7 @@ name = "json-with-comments"
 description = "JSON with Comments (jsonc) for Python"
 readme = "README.md"
 requires-python = ">=3.8"
-license = { text = "MIT" }
+license = "MIT"
 authors = [
   { name = "Takumasa Nakamura", email = "n.takumasa@gmail.com" },
 ]
@@ -32,6 +32,7 @@ classifiers = [
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
   "Programming Language :: Python :: 3.14",
+  "Programming Language :: Python :: 3.15",
   "Programming Language :: Python :: Implementation :: CPython",
   "Topic :: Software Development :: Libraries :: Python Modules",
 ]
@@ -56,6 +57,9 @@ dev = [
   { include-group = "lint" },
   { include-group = "type_mypy" },
 ]
+
+[tool.uv.dependency-groups]
+dev = { requires-python = ">=3.13" }
 
 [tool.ruff]
 line-length = 88
@@ -104,16 +108,18 @@ requires = [
 ]
 env_list = [
   "lint", "type",
-  "3.14", "3.13", "3.12", "3.11", "3.10", "3.9", "3.8",
+  "3.15", "3.14", "3.13", "3.12", "3.11", "3.10", "3.9", "3.8",
 ]
 
 [tool.tox.gh.python]
+"3.15" = ["3.15"]
 "3.14" = ["3.14"]
 "3.13" = ["3.13", "lint", "type"]
 "3.12" = ["3.12"]
 "3.11" = ["3.11"]
 "3.10" = ["3.10"]
 "3.9" = ["3.9"]
+"3.8" = ["3.8"]
 
 [tool.tox.env_run_base]
 package = "wheel"
