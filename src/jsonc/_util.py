@@ -35,7 +35,7 @@ _ADD_TRAILING_COMMA = r"""
 
 
 def _remove_c_comment(text: str) -> str:
-    if text[-1] != "\n":
+    if not text.endswith("\n"):
         text = text + "\n"
     return re.sub(
         _REMOVE_C_COMMENT,
