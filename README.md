@@ -32,6 +32,7 @@ pip install json-with-comments
 {'spam': 'ham // egg'}
 >>> jsonc.loads('{"spam": /* comment */"ham /* egg */"}')
 {'spam': 'ham /* egg */'}
+
 ```
 
 ### Saving JSON with comments
@@ -46,6 +47,7 @@ Example:
 
 ```py
 import jsonc
+
 print(
     jsonc.dumps(
         {"a": 1, "b": 2},
@@ -57,7 +59,7 @@ print(
 
 Output:
 
-```json
+```jsonc
 {
   "a": 1,
   "b": 2,
@@ -79,6 +81,7 @@ Simple example with dictionary:
 
 ```py
 import jsonc
+
 print(
     jsonc.dumps(
         {"a": 1, "b": 2},
@@ -92,8 +95,7 @@ print(
 ```
 
 Output:
-
-```json
+```jsonc
 {
   // this is a
   "a": 1,
@@ -106,6 +108,7 @@ Example with tuple commenting the list as a whole and the elements:
 
 ```py
 import jsonc
+
 print(
     jsonc.dumps(
         ["x", "y", "z"],
@@ -124,7 +127,7 @@ print(
 
 Output:
 
-```json
+```jsonc
 // the list
 [
   // element #0
