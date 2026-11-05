@@ -10,7 +10,7 @@ on:
 permissions: {}
 
 concurrency:
-  group: test-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 env:
@@ -37,8 +37,6 @@ jobs:
         with:
           persist-credentials: false
       - uses: astral-sh/setup-uv@v10.3.2
-        with:
-          enable-cache: false
       - name: Install tox
         run: >-
           uv tool install
@@ -52,7 +50,9 @@ jobs:
         run: >-
           uv python install
           --python-preference only-managed
-          ${{ matrix.env }}
+          ${CI_MATRIX_ENV}
+        env:
+          CI_MATRIX_ENV: ${{ matrix.env }}
       - name: Setup test suite
         run: tox run -vv --notest --skip-missing-interpreters false
         env:
